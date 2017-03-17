@@ -1,0 +1,2 @@
+ResolveInfo ActivityInfo ApplicationInfo
+============
