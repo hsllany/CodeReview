@@ -3,7 +3,7 @@ FragmentManager本身是一个抽象类，真正实现的是'FragmentManager.jav
 ## 先简单看下Add Fragment操作。
 在FragmentManagerImpl，通过FragmentManager的操作，是无法直接调用到的。
 
-```
+```java
     public void addFragment(Fragment fragment, boolean moveToStateNow) {
         if (mAdded == null) {
             mAdded = new ArrayList<Fragment>();
@@ -33,7 +33,7 @@ FragmentManager本身是一个抽象类，真正实现的是'FragmentManager.jav
 
 # BackStackRecord
 
-```
+```java
 final class BackStackRecord extends FragmentTransaction implements
     FragmentManager.BackStackEntry, Runnable 
 ```
@@ -42,7 +42,7 @@ final class BackStackRecord extends FragmentTransaction implements
 
 此外，包含一个双向链表，用来串联操作，即支持FragmentTransaction的链式调用，其实每调用一个add等操作，都是在这个链表上添加新的BackStackRecord。
 
-```
+```java
 public BackStackRecord(FragmentManagerImpl manager) {
     mManager = manager;
 }
@@ -55,7 +55,7 @@ Op mTail;
 
 ## 链表节点类型：
 
-```
+```java
 static final class Op {
 
     // 双向链表，用于向后、向前遍历，对应commit()和popBackStack() 2种操作。
@@ -91,7 +91,7 @@ static final class Op {
 ## add, attach, detach, show, hide, remove, replace
 所有的FragmentTransition的add, attach, detach, hide, remove, replace, show均是在增加这个链表。
 
-```
+```java
 add -> doAddOp(), 对应类型OP_ADD
 replace -> doAddOp(), 对应类型OP_REPLACE
 attach -> addOp(), 对应类型OP_ATTACH
@@ -101,7 +101,7 @@ hide -> addOp(), 对应类型OP_HIDE
 remove -> addOp(), 对应类型OP_REMOVE
 ```
 
-```
+```java
 public FragmentTransaction add(Fragment fragment, String tag) {
         doAddOp(0, fragment, tag, OP_ADD);
         return this;
@@ -130,7 +130,7 @@ public FragmentTransaction remove(Fragment fragment) {
 
 ### doAddOp()
 添加操作比较特殊，这个会留作以后分析。也是调用addOp();
-```
+```java
     private void doAddOp(int containerViewId, Fragment fragment, String tag, int opcmd) {
         fragment.mFragmentManager = mManager;
 
@@ -165,7 +165,7 @@ public FragmentTransaction remove(Fragment fragment) {
 
 ## commit
 调用链：
-```
+```java
 commit() -> commitInternal(false) -> mManager.enqueueAction(this, allowStateLoss);
 ```
 
@@ -173,7 +173,7 @@ commit() -> commitInternal(false) -> mManager.enqueueAction(this, allowStateLoss
 1. mManager中维护了一个所有待执行runnable的列表，该方法首先懒创建该列表，其次把this(BackStackRecord)作为Runnable加到这个mPenddingActions中。所有的操作其实都是放在BackStackRecord的run方法中。
 2. 执行mExeCommit
 
-```
+```java
 public void enqueueAction(Runnable action, boolean allowStateLoss) {
         if (!allowStateLoss) {
             checkStateLoss();
@@ -202,7 +202,7 @@ Runnable，仅运行一个方法：execPendingActions();
 
 ### execPendingActions()
 
-```
+```java
 while (true) {
             int numActions;
             
@@ -239,7 +239,7 @@ while (true) {
 
 ## BackStackRecord.run()
 
-```
+```java
     public void run() {
         if (FragmentManagerImpl.DEBUG) {
             Log.v(TAG, "Run: " + this);
@@ -370,7 +370,7 @@ while (true) {
 
 顺便看下FragmentManager中关于mBackStack的定义，以及addBackStackState()函数的代码。
 
-```
+```java
 ...
     ArrayList<BackStackRecord> mBackStack;
 
@@ -389,7 +389,7 @@ while (true) {
 
 同样是调用enqueueAction，不一定立即执行，而仅在恰当时期执行。
 
-```
+```java
 enqueueAction(new Runnable() {
             @Override public void run() {
                 popBackStackState(mHost.getHandler(), null, -1, 0);
@@ -401,7 +401,7 @@ enqueueAction(new Runnable() {
 
 这个方法思路与run()类似，先处理动画，然后执行操作，只不过，操作都是反着执行了。
 
-```
+```java
 Op op = mTail;
         while (op != null) {
             switch (op.cmd) {
@@ -479,7 +479,7 @@ Op op = mTail;
 
 最后，搞清楚了调用链，我们再回过来分析addFragment这个方法。
 
-```
+```java
     public void addFragment(Fragment fragment, boolean moveToStateNow) {
         if (mAdded == null) {
             mAdded = new ArrayList<Fragment>();
@@ -511,7 +511,7 @@ Op op = mTail;
 
 忽略一些细节来看代码
 
-```
+```java
 switch (f.mState) {
                 // 初始化, 即创建fragment的第一个状态
                 case Fragment.INITIALIZING:
