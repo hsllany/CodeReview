@@ -1,0 +1,2 @@
+# startActivityForResult的回传
+startActivityForResult，这个result是存储在前一个activity的mResultData中，在finish的时候通过intent传回去。
