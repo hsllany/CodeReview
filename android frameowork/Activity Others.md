@@ -1,0 +1,5 @@
+# startActivityForResult的回传
+startActivityForResult，这个result是存储在前一个activity的mResultData中，在finish的时候通过intent传回去。
+
+# onSavedInstance
+一切可能会销毁该Activity的动作时，都会调用，home键，跳转到别的APP，关屏，横竖屏切换。

@@ -10,7 +10,21 @@ ActivityRecord.appToken
 ActivityClientRecord.token
 ```
 
-其定义，及初始化在ActivityRecord的构造方法中：
+ActivityThread存储在mActivities中，以IBinder为键，值为ActivityClientRecord
+
+在ActivityManagerService中，appToken通过其弱引用找到对应的activityRecord
+
+WindowManagerService中，通过token找到对应的WindowToken。存储在:
+
+```
+  /**
+     * Mapping from a token IBinder to a WindowToken object.
+     */
+    final HashMap<IBinder, WindowToken> mTokenMap = new HashMap<>();
+```
+
+# 定义及初始化
+初始化在ActivityRecord的构造方法中：
 
 ```
 ActivityRecord(ActivityManagerService _service, ProcessRecord _caller,

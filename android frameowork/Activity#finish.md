@@ -35,3 +35,5 @@ Activity.finishAndRemoveTask -> finish(true)
         }
     }
 ```
+
+ActivityManagerService的finish相关过程，只涉及到ActivityThread的pause，没有stop的操作。
