@@ -2,6 +2,10 @@
 
 之所以能hook掉，是因为ContextImpl.getSystemService -> SystemServiceRegistry , 而SystemServiceRegistry的static块中，都是懒加载模式，当用到该系统服务的时候才会去SystemService中取Binder。
 
+并启动了一个独立进程，负责插件的安装等，模拟packageManager的行为。
+
+启动插件的Activity时，DroidPlugin hook了ActivityThread的mH的mCallback，使之在ActivityThread处理launchActivity之前，可以进行拦截。具体可看PluginCallback的handleLaunchActivity方法。其中创建了插件的LoadedApk，及插件的ClassLoader。并调用LoadedApk的makeApplication方法。该方法会将该LoadedApk加到ActivityThread的mAllApplications中去，并调用Application的onCreate方法；此外，替换intent中的activity为宿主的站桩Activity，然后启动该桩Activity.
+
 # IWindowManager
 该binder真正使用，是存在WindowManagerGlobal中，hook了addSession, overridePendingAppTransition, setAppStartingWindow方法。
 
