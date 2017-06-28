@@ -1,0 +1,8 @@
+启动时宿主application时，hook了ServiceManager的一堆系统binder。
+
+之所以能hook掉，是因为ContextImpl.getSystemService -> SystemServiceRegistry , 而SystemServiceRegistry的static块中，都是懒加载模式，当用到该系统服务的时候才会去SystemService中取Binder。
+
+# IWindowManager
+该binder真正使用，是存在WindowManagerGlobal中，hook了addSession, overridePendingAppTransition, setAppStartingWindow方法。
+
+addSession返回了一个代理的session，见IWindowSessionInvokeHandle类。其中几个方法，仅仅是修改了Window.LayoutParam.mPackageName = HostContext.packageName
