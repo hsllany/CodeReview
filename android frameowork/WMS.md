@@ -1,3 +1,5 @@
+http://blog.csdn.net/hohohong/article/details/54616053
+
 - WindowSession每个进程只有一个，保存在WindowManagerGlobal的静态变量中。实现类是com.android.server.wm.Session.java，APP获得是BP端；
 - ViewRootImpl首先调用WindowSession的addToDisplay()方法。将IWindow传入，这里IWindow的BN端在APP测。
 
